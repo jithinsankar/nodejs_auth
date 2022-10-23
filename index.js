@@ -20,9 +20,9 @@ app.post('/renewAccessToken',(req,res)=>{
         return res.status(403).json({message:"User not authenticated"});
     }
 
-    jwt.verify(refreshToken,'refresh',(err,user)=>{
+    jwt.verify(refreshToken,process.env.REFRESHTOKEN_SECRET,(err,user)=>{
         if(!err){
-            const accessToken = jwt.sign({username:user.name},'access',{expiresIn:'45s'})
+            const accessToken = jwt.sign({username:user.name},process.env.ACCESSTOKEN_SECRET,{expiresIn:'45s'})
             return res.status(201).json({accessToken});
         }
         else{
@@ -33,7 +33,7 @@ app.post('/renewAccessToken',(req,res)=>{
 
 function auth(req,res,next){
     let token =req.headers['authorization'].split(' ')[1]
-    jwt.verify(token,'access',(err,user)=>{
+    jwt.verify(token,process.env.ACCESSTOKEN_SECRET,(err,user)=>{
         if(!err){
             req.user = user;
             next();
@@ -55,8 +55,8 @@ app.post('/login',(req,res)=>{
         return res.status(404).json({message:'Body Empty'})
     }
 
-        let accessToken = jwt.sign({user:user.username},'access',{expiresIn:'45s'});
-        let refreshToken = jwt.sign({user:user.username},'refresh',{expiresIn:'1d'});
+        let accessToken = jwt.sign({user:user.username},process.env.ACCESSTOKEN_SECRET,{expiresIn:'45s'});
+        let refreshToken = jwt.sign({user:user.username},process.env.REFRESHTOKEN_SECRET,{expiresIn:'1d'});
         refreshTokens.push(refreshToken)
         return res.status(201).json({
             accessToken,
