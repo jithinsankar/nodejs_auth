@@ -2,6 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require("dotenv").config();
+const bcrypt = require('bcryptjs')
+
 const app=express();
 const User= require("./user");
 
@@ -48,36 +50,48 @@ app.post('/protected',auth,(req,res)=>{
     res.json(req.user)
 })
 
-app.post('/login',(req,res)=>{
-    const user = req.body.user;
-    const password = req.body.password;
+app.post('/login',async(req,res)=>{
+
+    const user = await User.findOne({username:req.body.username})
+
     if(!user){
-        return res.status(404).json({message:'Body Empty'})
+        return res.status(404).json({message:'User not found'})
     }
 
-        let accessToken = jwt.sign({user:user.username},process.env.ACCESSTOKEN_SECRET,{expiresIn:'45s'});
-        let refreshToken = jwt.sign({user:user.username},process.env.REFRESHTOKEN_SECRET,{expiresIn:'1d'});
+    const isPasswordValid = await bcrypt.compare(req.body.password,user.password);
+
+    if(isPasswordValid)
+    {
+        let accessToken = jwt.sign({'user':user.username},process.env.ACCESSTOKEN_SECRET,{expiresIn:'45s'});
+        let refreshToken = jwt.sign({'user':user.username},process.env.REFRESHTOKEN_SECRET,{expiresIn:'1d'});
         refreshTokens.push(refreshToken)
         return res.status(201).json({
             accessToken,
             refreshToken
         });
+    }
+    else{
+        return res.status(403).json({"message":"Wrong Password"})
+    }
 
 });
 
-app.post('/register',(req,res)=>{
+app.post('/register', async (req,res)=>{
     try{
         const { username, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
-            password
-    })
-    console.log(newUser);
-    newUser.save();
-}
-catch(err){
-    console.log(err);
-}
+            password:hashedPassword
+        })
+        console.log(newUser);
+        const response = await newUser.save();
+        res.send(`User ${username} created`)
+        }
+    catch(err){
+        console.log(err);
+        return res.status(403).json({"message":"Duplicate user"})
+    }
 });
 
 

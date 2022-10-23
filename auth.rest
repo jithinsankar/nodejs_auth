@@ -1,0 +1,36 @@
+POST http://localhost:3000/login
+content-type: application/json
+
+{
+        "username": "aspardo3",
+        "password": "Hi"
+}
+
+
+###
+POST http://localhost:3000/register
+content-type: application/json
+
+{
+        "username": "aspardo3",
+        "password": "Hi"
+}
+
+###
+POST http://localhost:3000/protected
+content-type: application/json
+Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXNwYXJkbyIsImlhdCI6MTY2NjQ2MzIwMSwiZXhwIjoxNjY2NDYzMjQ2fQ.AfKcgkcbLgJ44NdMw7bpI5jpEj4ZK71ut5J2qVMDteE
+
+
+###
+
+POST http://localhost:3000/renewAccessToken
+content-type: application/json
+
+{   
+    "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzcGFyZG8iLCJwYXNzd29yZCI6InFxdyIsImlhdCI6MTY2NjQ1NjgyMiwiZXhwIjoxNjY2NTQzMjIyfQ.i1K5Dca1ZRqLpwwNfBAuh-mD1jqmEIiEs_EINzGnQ48"
+}
+
+
+###
+GET http://localhost:3000/login
