@@ -6,6 +6,15 @@ content-type: application/json
         "password": "Hi"
 }
 
+###
+POST http://localhost:3000/forgotPassword
+content-type: application/json
+
+{
+        "email":"hi@hi.com"
+}
+
+
 
 ###
 POST http://localhost:3000/register
@@ -13,7 +22,8 @@ content-type: application/json
 
 {
         "username": "aspardo3",
-        "password": "Hi"
+        "password": "Hi",
+        "email": "hi@hi.com"
 }
 
 ###

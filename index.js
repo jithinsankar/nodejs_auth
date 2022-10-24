@@ -78,11 +78,12 @@ app.post('/login',async(req,res)=>{
 
 app.post('/register', async (req,res)=>{
     try{
-        const { username, password } = req.body;
+        const { username, password, email } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
-            password:hashedPassword
+            password:hashedPassword,
+            email
         })
         console.log(newUser);
         const response = await newUser.save();
@@ -90,11 +91,43 @@ app.post('/register', async (req,res)=>{
         }
     catch(err){
         console.log(err);
-        return res.status(403).json({"message":"Duplicate user"})
+        return res.status(403).json({"message":err.message})
     }
 });
 
+app.post('/forgotPassword',async (req,res)=>{
+    const email = req.body.email;
+    const user = await User.findOne({email})
 
+    if(!user){
+        return res.status(404).json({message:'User not found'})
+    }
+
+    const token = jwt.sign({email:user.email}, process.env.FORGOTPASSWORD_SECRET+user.password, {expiresIn:'10m' });
+    const link = `http://localhost:3000/resetPassword/${user.email}/${token}`
+    console.log(link);
+    return res.status(201).json({"message":"Check your inbox"});
+    
+})
+
+
+app.get('/resetPassword/:email/:token',async (req,res)=>{
+
+    const {email,token} = req.params;
+    const user = await User.findOne({email})
+
+    jwt.verify(token,process.env.FORGOTPASSWORD_SECRET+user.password,(err,email)=>{
+        if(!err){
+            user.password = "kkkkkkkkkkkkkkkk";
+            user.save();
+        }
+        else{
+            return res.status(403).json({"message":"Invalid token"})
+        }
+    })
+
+    res.send()
+})
 
 app.listen(3000); 
 
