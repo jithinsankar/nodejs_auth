@@ -5,6 +5,7 @@ require("dotenv").config();
 const bcrypt = require('bcryptjs')
 
 const app=express();
+app.use(express.urlencoded({extended:true}));
 const User= require("./user");
 
 
@@ -104,30 +105,55 @@ app.post('/forgotPassword',async (req,res)=>{
     }
 
     const token = jwt.sign({email:user.email}, process.env.FORGOTPASSWORD_SECRET+user.password, {expiresIn:'10m' });
-    const link = `http://localhost:3000/resetPassword/${user.email}/${token}`
+    const link = `http://localhost:3000/resetPassword/${token}`
     console.log(link);
     return res.status(201).json({"message":"Check your inbox"});
     
 })
 
 
-app.get('/resetPassword/:email/:token',async (req,res)=>{
+app.get('/resetPassword/:token',async (req,res)=>{
 
-    const {email,token} = req.params;
+    const {token} = req.params;
+    
+    const email = await jwt.decode(token).email
     const user = await User.findOne({email})
-
     jwt.verify(token,process.env.FORGOTPASSWORD_SECRET+user.password,(err,email)=>{
         if(!err){
-            user.password = "kkkkkkkkkkkkkkkk";
-            user.save();
+            res.send('<form action="/resetPassword" method="POST">' +
+            '<input type="hidden" name="email" value="' + email.email + '" />' +
+            '<input type="hidden" name="token" value="' + req.params.token + '" />' +
+            '<input type="password" name="password" value="" placeholder="Enter your new password..." />' +
+            '<input type="submit" value="Reset Password" />' +
+        '</form>');
         }
         else{
             return res.status(403).json({"message":"Invalid token"})
         }
     })
 
-    res.send()
+
 })
+app.post('/resetPassword',async (req,res)=>{
+
+    const {email,token,password} = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.findOne({email})
+    jwt.verify(token,process.env.FORGOTPASSWORD_SECRET+user.password,(err,email)=>{
+        if(!err){
+            user.password = hashedPassword;
+            user.save();
+            res.send("Password reset successfull")
+        }
+        else{
+            return res.status(403).json({"message":"Invalid token"})
+        }
+    })
+});
+
+
+
 
 app.listen(3000); 
 

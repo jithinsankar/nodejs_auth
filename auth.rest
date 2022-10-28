@@ -2,8 +2,8 @@ POST http://localhost:3000/login
 content-type: application/json
 
 {
-        "username": "aspardo3",
-        "password": "Hi"
+        "username": "HiALL",
+        "password": "qwerty"
 }
 
 ###
@@ -11,7 +11,7 @@ POST http://localhost:3000/forgotPassword
 content-type: application/json
 
 {
-        "email":"hi@hi.com"
+        "email":"hiall@hi.com"
 }
 
 
@@ -21,16 +21,15 @@ POST http://localhost:3000/register
 content-type: application/json
 
 {
-        "username": "aspardo3",
+        "username": "HiALL",
         "password": "Hi",
-        "email": "hi@hi.com"
+        "email": "hiall@hi.com"
 }
 
 ###
 POST http://localhost:3000/protected
 content-type: application/json
-Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXNwYXJkbyIsImlhdCI6MTY2NjQ2MzIwMSwiZXhwIjoxNjY2NDYzMjQ2fQ.AfKcgkcbLgJ44NdMw7bpI5jpEj4ZK71ut5J2qVMDteE
-
+Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSGlBTEwiLCJpYXQiOjE2NjY5ODA2MzQsImV4cCI6MTY2Njk4MDY3OX0.RFT31ymvcddy2QN2l3LkFR1DRmm0qfuVF_Rr8a9BlqI
 
 ###
 
